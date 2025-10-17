@@ -1,0 +1,11 @@
+﻿@model KaShop1.Models.Catgery
+
+<form method="post" action="/Admin/Categories/Store">
+    <div class="form-group mb-3">
+        <label for="categoryName">Name</label>
+        <input type="text"class="form-control"name="name"value="@Model.Name"id="categoryName" placeholder="Enter your category name" />
+        <span class="text-danger" asp-validation-for="Name"></span>
+    </div>
+
+    <button type="submit" class="btn btn-outline-primary w-100">Create</button>
+</form>
