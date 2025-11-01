@@ -13,7 +13,7 @@ namespace KaShop1.Data
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlServer("Server=.;Database=Ka_12M;Trusted_Connection=True;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Server=db29902.public.databaseasp.net; Database=db29902; User Id=db29902; Password=a#2EF5k@6!Pz; Encrypt=True; TrustServerCertificate=True; MultipleActiveResultSets=True;");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

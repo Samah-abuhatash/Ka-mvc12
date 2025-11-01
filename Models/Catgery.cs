@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace KaShop1.Models
 {
@@ -8,6 +9,8 @@ namespace KaShop1.Models
         [MinLength(3)]
         [MaxLength(10)]
         public string Name { get; set; }
+        [ValidateNever]
+
         public List<Proudct> Proudcts { get; set;} = new List<Proudct>();
         
     }
