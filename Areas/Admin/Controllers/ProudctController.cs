@@ -44,49 +44,59 @@ namespace KaShop1.Areas.Admin.Controllers
         }
         public IActionResult Store(Proudct request, IFormFile file)
         {
+            ViewBag.catgeries = Context.catgeries.ToList();
+
+            ModelState.Remove("File");
             if (!ModelState.IsValid)
             {
                 return View("Creat", request);
             }
 
-            if (file != null && file.Length > 0)
+            if (file == null || file.Length == 0)
             {
-                // إنشاء اسم فريد للملف
-                var fileName = Guid.NewGuid().ToString();
-                fileName += Path.GetExtension(file.FileName); // مثال: 1234abcd.png
+                ModelState.AddModelError("Image", "please upload an image");
+                return View("Creat", request);
 
-                // تحديد المسار الكامل داخل مجلد wwwroot/images
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", fileName);
-
-                // حفظ الملف فعليًا على السيرفر
-                using (var stream = System.IO.File.Create(filePath))
-                {
-                    file.CopyTo(stream);
-                }
-
-                // حفظ اسم الصورة في قاعدة البيانات
-                request.Image = fileName;
-
-                // إضافة المنتج إلى قاعدة البيانات
-                Context.Proudcts.Add(request);
-                Context.SaveChanges();
-
-                // العودة إلى صفحة Index بعد الإضافة
-                return RedirectToAction(nameof(Index));
             }
-            ViewBag.catgeries = Context.catgeries.ToList();
-            return View("Creat", request);
+            var allowedExtensions = new[] { ".jpg", ".webp" };
+            var extension = Path.GetExtension(file.FileName).ToLower();
+            if (!allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("Image", "only jpg or webp are allowed");
+                return View("Creat", request);
+            }
 
+            if (file.Length > 2 * 1024 * 1024)
+            {
+                ModelState.AddModelError("Image", "image size must be less than 2MB");
+                return View("Creat", request);
+
+
+            }
+            var fileName = Guid.NewGuid().ToString();
+            fileName += Path.GetExtension(file.FileName);
+            var filepath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images", fileName);
+            using (var stream = System.IO.File.Create(filepath))
+            {
+                file.CopyTo(stream);
+            }
+            request.Image = fileName;
+            Context.Proudcts.Add(request);
+            Context.SaveChanges();
+            return RedirectToAction(nameof(Index));
         }
+
         public IActionResult Remove(int id)
         {
-            var pro = Context.Proudcts.Find(id);
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", pro.Image);
-            System.IO.File.Delete(filePath);
-            Context.Proudcts.Remove(pro);
+            var product = Context.Proudcts.Find(id);
+            var filepath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images", product.Image);
+            System.IO.File.Delete(filepath);
+            Context.Proudcts.Remove(product);
             Context.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
+
+      
         public IActionResult Edit(int id)
 
         {
